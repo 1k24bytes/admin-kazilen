@@ -67,14 +67,18 @@ export default function Dashboard() {
   }
 
   const cards = [
-    { label: "Total Users", value: stats.total_users, icon: Users },
-    { label: "Customers", value: stats.total_customers, icon: UserCheck },
-    { label: "Workers", value: stats.total_workers, icon: Wrench },
-    { label: "Workers Online", value: stats.workers_online, icon: Wifi },
-    { label: "Total Bookings", value: stats.total_bookings, icon: CalendarCheck },
-    { label: "Pending Bookings", value: stats.bookings_pending, icon: CircleAlert },
-    { label: "Completed", value: stats.bookings_completed, icon: CalendarCheck },
-    { label: "Reviews", value: stats.total_reviews, icon: Star },
+    { label: "Total Users", value: stats.total_users, icon: Users, to: "/users" },
+    { label: "Customers", value: stats.total_customers, icon: UserCheck, to: "/users" },
+    { label: "Workers", value: stats.total_workers, icon: Wrench, to: "/users" },
+    { label: "Workers Online", value: stats.workers_online, icon: Wifi, to: "/users" },
+    { label: "Total Bookings", value: stats.total_bookings, icon: CalendarCheck, to: "/bookings" },
+    { label: "Pending Bookings", value: stats.bookings_pending, icon: CircleAlert, to: "/bookings" },
+    { label: "Completed", value: stats.bookings_completed, icon: CalendarCheck, to: "/bookings" },
+    { label: "Reviews", value: stats.total_reviews, icon: Star, to: "/reviews" },
+    { label: "Feedback", value: stats.total_feedback ?? 0, icon: Star, to: "/feedback" },
+    { label: "Categories", value: stats.total_categories ?? 0, icon: Wrench, to: "/categories" },
+    { label: "Sub Categories", value: stats.total_sub_categories ?? 0, icon: Wrench, to: "/categories" },
+    { label: "Referrals", value: stats.total_referrals ?? 0, icon: Users, to: "/referrals" },
   ];
 
   return (
@@ -90,17 +94,19 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {cards.map((c) => (
-          <Card key={c.label}>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-[11px] font-bold text-slate-500">{c.label}</p>
-                <c.icon className="h-4 w-4 text-slate-400" />
-              </div>
-              <p className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
-                {c.value}
-              </p>
-            </CardContent>
-          </Card>
+          <Link key={c.label} to={c.to}>
+            <Card className="hover:border-orange-200 transition-colors duration-150">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-bold text-slate-500">{c.label}</p>
+                  <c.icon className="h-4 w-4 text-slate-400" />
+                </div>
+                <p className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
+                  {c.value}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 

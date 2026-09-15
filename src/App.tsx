@@ -3,8 +3,13 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Layout from "@/components/Layout";
 import AddWorker from "@/pages/AddWorker";
 import Bookings from "@/pages/Bookings";
+import Categories from "@/pages/Categories";
 import Dashboard from "@/pages/Dashboard";
+import Feedback from "@/pages/Feedback";
 import Login from "@/pages/Login";
+import Membership from "@/pages/Membership";
+import Referrals from "@/pages/Referrals";
+import Reviews from "@/pages/Reviews";
 import Users from "@/pages/Users";
 import type { JSX } from "react";
 
@@ -67,8 +72,13 @@ export default function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="users" element={<Users />} />
+            <Route path="categories" element={<Categories />} />
             <Route path="workers/new" element={<AddWorker />} />
             <Route path="bookings" element={<Bookings />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="feedback" element={<Feedback />} />
+            <Route path="membership" element={<Membership />} />
+            <Route path="referrals" element={<Referrals />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

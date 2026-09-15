@@ -2,9 +2,13 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   BookOpenCheck,
   CalendarCheck,
+  Crown,
+  Gift,
   LayoutDashboard,
+  LayoutGrid,
   LogOut,
   ShieldCheck,
+  Star,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -15,8 +19,13 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/users", label: "Users", icon: Users, end: false },
+  { to: "/categories", label: "Categories", icon: LayoutGrid, end: false },
   { to: "/workers/new", label: "Add Worker", icon: UserPlus, end: false },
   { to: "/bookings", label: "Bookings", icon: CalendarCheck, end: false },
+  { to: "/reviews", label: "Reviews", icon: Star, end: false },
+  { to: "/feedback", label: "Feedback", icon: BookOpenCheck, end: false },
+  { to: "/membership", label: "Membership", icon: Crown, end: false },
+  { to: "/referrals", label: "Refer & Earn", icon: Gift, end: false },
 ];
 
 export default function Layout() {

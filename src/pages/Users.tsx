@@ -20,6 +20,7 @@ export default function Users() {
   const [role, setRole] = useState("");
   const [offset, setOffset] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const load = useCallback(async (roleFilter: string, page: number) => {
@@ -46,6 +47,51 @@ export default function Users() {
   useEffect(() => {
     load(role, offset);
   }, [load, role, offset]);
+
+  const toggleOnline = async (u: AdminUser) => {
+    setError(null);
+    setNotice(null);
+    try {
+      await apiFetch(`/api/admin/users/${u.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ is_online: !u.is_online }),
+      });
+      setNotice(`Worker #${u.id} is now ${u.is_online ? "offline" : "online"}.`);
+      await load(role, offset);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed");
+    }
+  };
+
+  const toggleRole = async (u: AdminUser) => {
+    const next = u.role === "worker" ? "customer" : "worker";
+    if (!confirm(`Change user #${u.id} to ${next}?`)) return;
+    setError(null);
+    setNotice(null);
+    try {
+      await apiFetch(`/api/admin/users/${u.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ role: next }),
+      });
+      setNotice(`User #${u.id} is now a ${next}.`);
+      await load(role, offset);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed");
+    }
+  };
+
+  const removeUser = async (u: AdminUser) => {
+    if (!confirm(`Delete user #${u.id} (${u.full_name ?? u.phone_number})?`)) return;
+    setError(null);
+    setNotice(null);
+    try {
+      await apiFetch(`/api/admin/users/${u.id}`, { method: "DELETE" });
+      setNotice(`User #${u.id} deleted.`);
+      await load(role, offset);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed");
+    }
+  };
 
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -82,6 +128,12 @@ export default function Users() {
         ))}
       </div>
 
+      {notice && (
+        <p className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-sm px-3 py-2">
+          {notice}
+        </p>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Accounts</CardTitle>
@@ -101,7 +153,8 @@ export default function Users() {
                   <th className="py-2 pr-3 font-bold">Phone</th>
                   <th className="py-2 pr-3 font-bold">Role</th>
                   <th className="py-2 pr-3 font-bold">Status</th>
-                  <th className="py-2 font-bold">Referrals</th>
+                  <th className="py-2 pr-3 font-bold">Referrals</th>
+                  <th className="py-2 font-bold">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -122,19 +175,44 @@ export default function Users() {
                     </td>
                     <td className="py-2 pr-3">
                       {u.role === "worker" ? (
-                        <Badge variant={u.is_online ? "success" : "default"}>
-                          {u.is_online ? "online" : "offline"}
-                        </Badge>
+                        <button
+                          title="Toggle online/offline"
+                          onClick={() => toggleOnline(u)}
+                        >
+                          <Badge variant={u.is_online ? "success" : "default"}>
+                            {u.is_online ? "online" : "offline"}
+                          </Badge>
+                        </button>
                       ) : (
                         <span className="text-slate-400">-</span>
                       )}
                     </td>
-                    <td className="py-2">{u.referral_points}</td>
+                    <td className="py-2 pr-3">{u.referral_points}</td>
+                    <td className="py-2">
+                      <div className="flex gap-1.5">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          title={u.role === "worker" ? "Convert to customer" : "Convert to worker"}
+                          onClick={() => toggleRole(u)}
+                        >
+                          {u.role === "worker" ? "To customer" : "To worker"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          title="Delete user"
+                          onClick={() => removeUser(u)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {!isLoading && users.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-4 text-center text-slate-500">
+                    <td colSpan={7} className="py-4 text-center text-slate-500">
                       No users found.
                     </td>
                   </tr>
